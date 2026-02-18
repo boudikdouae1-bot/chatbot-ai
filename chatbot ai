@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Intelligent - Dark Mode</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .message-bubble {
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+        /* Style des messages utilisateur : Gris foncé / Noir */
+        .user-msg {
+            background-color: #1f2937;
+            color: #f9fafb;
+            border-radius: 18px 18px 2px 18px;
+        }
+        /* Style des messages IA : Gris très clair */
+        .ai-msg {
+            background-color: #f3f4f6;
+            color: #111827;
+            border-radius: 18px 18px 18px 2px;
+        }
+        #chat-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #chat-container::-webkit-scrollbar-thumb {
+            background: #4b5563;
+            border-radius: 10px;
+        }
+        .dot-pulse {
+            display: inline-flex;
+            gap: 4px;
+        }
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #94a3b8;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes pulse {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-900 h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Carte de Chat -->
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[80vh]">
+        <!-- En-tête : Noir profond -->
+        <div class="bg-black p-4 text-white flex items-center gap-3">
+            <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">Assistant Virtuel</h1>
+                <p class="text-xs text-gray-400">Design Noir & Élégant</p>
+            </div>
+        </div>
+
+        <!-- Zone des Messages -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+            <div class="ai-msg message-bubble p-3">
+                Bonjour ! Le thème a été mis à jour en mode sombre. Comment puis-je vous aider ?
+            </div>
+        </div>
+
+        <!-- Indicateur de saisie -->
+        <div id="typing-indicator" class="px-4 py-2 hidden bg-gray-50">
+            <div class="ai-msg message-bubble p-3 inline-block">
+                <div class="dot-pulse">
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Zone de saisie -->
+        <div class="p-4 border-t bg-white">
+            <form id="chat-form" class="flex gap-2">
+                <input 
+                    type="text" 
+                    id="user-input" 
+                    placeholder="Posez votre question ici..." 
+                    class="flex-1 p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
+                    required
+                    autocomplete="off"
+                >
+                <button 
+                    type="submit" 
+                    id="send-btn"
+                    class="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl transition-colors flex items-center justify-center font-medium disabled:opacity-50"
+                >
+                    Envoyer
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const sendBtn = document.getElementById('send-btn');
+
+        const apiKey = "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"; 
+
+        function appendMessage(text, isUser = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message-bubble p-3 ${isUser ? 'user-msg ml-auto' : 'ai-msg mr-auto'}`;
+            msgDiv.textContent = text;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        async function fetchGeminiResponse(prompt, retries = 5, delay = 1000) {
+            const url = "https://openrouter.ai/api/v1/chat/completions";
+            
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`,
+                        'HTTP-Referer': window.location.href,
+                        'X-Title': 'TP5 Chatbot Dark'
+                    },
+                    body: JSON.stringify({
+                        model: "google/gemini-2.0-flash-001",
+                        messages: [
+                            { role: "system", content: "Tu es un assistant utile et poli. Réponds de manière concise en français." },
+                            { role: "user", content: prompt }
+                        ]
+                    })
+                });
+
+                if (response.status === 429 && retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchGeminiResponse(prompt, retries - 1, delay * 2);
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error?.message || 'Erreur API');
+                }
+
+                const data = await response.json();
+                return data.choices?.[0]?.message?.content || "Désolé, je n'ai pas pu générer de réponse.";
+            } catch (error) {
+                if (retries > 0) {
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return fetchGeminiResponse(prompt, retries - 1, delay * 2);
+                }
+                throw error;
+            }
+        }
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            appendMessage(text, true);
+            userInput.value = '';
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            typingIndicator.classList.remove('hidden');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            try {
+                const aiResponse = await fetchGeminiResponse(text);
+                typingIndicator.classList.add('hidden');
+                appendMessage(aiResponse, false);
+            } catch (error) {
+                typingIndicator.classList.add('hidden');
+                appendMessage("Erreur : " + error.message);
+            } finally {
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }
+        });
+    </script>
+</body>
+</html>
