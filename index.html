@@ -3,78 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbot Intelligent - Dark Mode</title>
+    <title>Chatbot - Noir Épuré</title>
+    <!-- Chargement de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000000;
+        }
+
         .message-bubble {
-            max-width: 80%;
+            max-width: 85%;
             word-wrap: break-word;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        /* Style des messages utilisateur : Gris foncé / Noir */
+
+        /* Style Utilisateur : Noir profond avec bordure subtile */
         .user-msg {
-            background-color: #1f2937;
-            color: #f9fafb;
-            border-radius: 18px 18px 2px 18px;
+            background-color: #111111;
+            color: #ffffff;
+            border-radius: 20px 20px 4px 20px;
+            border: 1px solid #222;
         }
-        /* Style des messages IA : Gris très clair */
+
+        /* Style IA : Gris anthracite très doux */
         .ai-msg {
-            background-color: #f3f4f6;
-            color: #111827;
-            border-radius: 18px 18px 18px 2px;
+            background-color: #1a1a1a;
+            color: #eeeeee;
+            border-radius: 20px 20px 20px 4px;
+            border: 1px solid #2a2a2a;
         }
+
+        /* Personnalisation de la barre de défilement */
         #chat-container::-webkit-scrollbar {
-            width: 4px;
+            width: 3px;
         }
         #chat-container::-webkit-scrollbar-thumb {
-            background: #4b5563;
+            background: #333;
             border-radius: 10px;
         }
+
+        /* Animation de chargement */
         .dot-pulse {
             display: inline-flex;
             gap: 4px;
+            padding: 4px 0;
         }
         .dot {
-            width: 6px;
-            height: 6px;
-            background: #94a3b8;
+            width: 4px;
+            height: 4px;
+            background: #ffffff;
             border-radius: 50%;
-            animation: pulse 1.5s infinite ease-in-out;
+            animation: pulse 1.4s infinite ease-in-out;
+            opacity: 0.5;
         }
         .dot:nth-child(2) { animation-delay: 0.2s; }
         .dot:nth-child(3) { animation-delay: 0.4s; }
+        
         @keyframes pulse {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
+            0%, 100% { transform: scale(1); opacity: 0.2; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+
+        .input-dark {
+            background-color: #0a0a0a;
+            border: 1px solid #222;
+            color: white;
+        }
+        .input-dark:focus {
+            border-color: #444;
+            background-color: #111;
         }
     </style>
 </head>
-<body class="bg-gray-900 h-screen flex flex-col items-center justify-center p-4">
+<body class="h-screen flex flex-col items-center justify-center p-4 md:p-8">
 
-    <!-- Carte de Chat -->
-    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[80vh]">
-        <!-- En-tête : Noir profond -->
-        <div class="bg-black p-4 text-white flex items-center gap-3">
-            <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                </svg>
+    <!-- Interface principale -->
+    <div class="w-full max-w-3xl bg-[#050505] rounded-[2.5rem] shadow-[0_0_80px_rgba(0,0,0,1)] flex flex-col overflow-hidden h-[90vh] border border-white/5">
+        
+        <!-- Header Minimaliste -->
+        <div class="bg-black p-8 text-white flex items-center justify-between border-b border-white/5">
+            <div class="flex items-center gap-5">
+                <div class="relative">
+                    <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-7 h-7 text-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-4 border-[#050505] rounded-full"></span>
+                </div>
+                <div>
+                    <h1 class="font-bold text-2xl tracking-tighter text-white">ONYX</h1>
+                    <p class="text-[9px] uppercase tracking-[0.4em] text-gray-500 font-black">Core Intelligence</p>
+                </div>
             </div>
-            <div>
-                <h1 class="font-bold text-lg leading-tight">Assistant Virtuel</h1>
-                <p class="text-xs text-gray-400">Design Noir & Élégant</p>
+            <div class="flex gap-4">
+                <div class="h-8 w-[1px] bg-white/10"></div>
+                <button class="text-gray-500 hover:text-white transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16m-7 6h7" />
+                    </svg>
+                </button>
             </div>
         </div>
 
-        <!-- Zone des Messages -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
-            <div class="ai-msg message-bubble p-3">
-                Bonjour ! Le thème a été mis à jour en mode sombre. Comment puis-je vous aider ?
+        <!-- Zone de conversation -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-8 space-y-10 bg-black">
+            <div class="flex justify-start">
+                <div class="ai-msg message-bubble p-6 text-sm leading-relaxed tracking-wide">
+                    Identité confirmée. Je suis **Onyx**. Prêt pour vos directives.
+                </div>
             </div>
         </div>
 
-        <!-- Indicateur de saisie -->
-        <div id="typing-indicator" class="px-4 py-2 hidden bg-gray-50">
-            <div class="ai-msg message-bubble p-3 inline-block">
+        <!-- Indicateur de réflexion -->
+        <div id="typing-indicator" class="px-8 py-4 hidden bg-black">
+            <div class="ai-msg message-bubble p-4 inline-block">
                 <div class="dot-pulse">
                     <div class="dot"></div>
                     <div class="dot"></div>
@@ -83,25 +129,33 @@
             </div>
         </div>
 
-        <!-- Zone de saisie -->
-        <div class="p-4 border-t bg-white">
-            <form id="chat-form" class="flex gap-2">
-                <input 
-                    type="text" 
-                    id="user-input" 
-                    placeholder="Posez votre question ici..." 
-                    class="flex-1 p-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all"
-                    required
-                    autocomplete="off"
-                >
+        <!-- Saisie de message -->
+        <div class="p-8 bg-black border-t border-white/5">
+            <form id="chat-form" class="flex gap-5 items-center">
+                <div class="flex-1 relative">
+                    <input 
+                        type="text" 
+                        id="user-input" 
+                        placeholder="Entrez une commande..." 
+                        class="input-dark w-full p-5 pl-8 rounded-2xl focus:outline-none transition-all text-sm tracking-wide"
+                        required
+                        autocomplete="off"
+                    >
+                </div>
                 <button 
                     type="submit" 
                     id="send-btn"
-                    class="bg-black hover:bg-gray-800 text-white px-6 py-3 rounded-xl transition-colors flex items-center justify-center font-medium disabled:opacity-50"
+                    class="bg-white hover:bg-gray-200 text-black w-16 h-16 rounded-2xl transition-all flex items-center justify-center disabled:opacity-10 disabled:grayscale shadow-[0_0_20px_rgba(255,255,255,0.05)] active:scale-90"
                 >
-                    Envoyer
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
                 </button>
             </form>
+            <div class="flex justify-between items-center mt-6">
+                <p class="text-[9px] text-gray-600 font-bold uppercase tracking-[0.3em]">Encrypted Session</p>
+                <p class="text-[9px] text-gray-600 font-bold uppercase tracking-[0.3em]">v2.5.0</p>
+            </div>
         </div>
     </div>
 
@@ -112,14 +166,20 @@
         const typingIndicator = document.getElementById('typing-indicator');
         const sendBtn = document.getElementById('send-btn');
 
+        // Votre clé API OpenRouter
         const apiKey = "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"; 
 
         function appendMessage(text, isUser = false) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${isUser ? 'justify-end' : 'justify-start'} animate-in fade-in slide-in-from-bottom-4 duration-500`;
+            
             const msgDiv = document.createElement('div');
-            msgDiv.className = `message-bubble p-3 ${isUser ? 'user-msg ml-auto' : 'ai-msg mr-auto'}`;
+            msgDiv.className = `message-bubble p-6 text-sm leading-relaxed tracking-wide ${isUser ? 'user-msg' : 'ai-msg'}`;
             msgDiv.textContent = text;
-            chatContainer.appendChild(msgDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            wrapper.appendChild(msgDiv);
+            chatContainer.appendChild(wrapper);
+            chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
         }
 
         async function fetchGeminiResponse(prompt, retries = 5, delay = 1000) {
@@ -131,13 +191,13 @@
                     headers: { 
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${apiKey}`,
-                        'HTTP-Referer': window.location.href,
-                        'X-Title': 'TP5 Chatbot Dark'
+                        'HTTP-Referer': window.location.origin,
+                        'X-Title': 'Onyx Dark Core'
                     },
                     body: JSON.stringify({
                         model: "google/gemini-2.0-flash-001",
                         messages: [
-                            { role: "system", content: "Tu es un assistant utile et poli. Réponds de manière concise en français." },
+                            { role: "system", content: "Tu es Onyx, une intelligence artificielle au ton neutre, précis et sophistiqué. Tu réponds en français de manière concise." },
                             { role: "user", content: prompt }
                         ]
                     })
@@ -150,11 +210,11 @@
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(errorData.error?.message || 'Erreur API');
+                    throw new Error(errorData.error?.message || 'Erreur système');
                 }
 
                 const data = await response.json();
-                return data.choices?.[0]?.message?.content || "Désolé, je n'ai pas pu générer de réponse.";
+                return data.choices?.[0]?.message?.content || "Échec de réception.";
             } catch (error) {
                 if (retries > 0) {
                     await new Promise(resolve => setTimeout(resolve, delay));
@@ -182,7 +242,7 @@
                 appendMessage(aiResponse, false);
             } catch (error) {
                 typingIndicator.classList.add('hidden');
-                appendMessage("Erreur : " + error.message);
+                appendMessage("ERREUR SYSTÈME : " + error.message);
             } finally {
                 userInput.disabled = false;
                 sendBtn.disabled = false;
